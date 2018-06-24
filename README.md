@@ -37,7 +37,8 @@ The proc returns a single value which may be one of:
 - `-`: An optionless argument. The value of the argument is stored in `optarg`.
 - `?`: An invalid option. An error message has been printed to `stderr` and the
   option that caused the error is stored in `optopt`.
-- All other values: A valid option.
+- All other values: A valid option. This value is also stored in `optopt`. If
+  the option takes an argument, the value is stored in `optarg`.
 
 The following variable names are reserved:
 - `optind`: The index of the next `argv`.
@@ -45,8 +46,8 @@ The following variable names are reserved:
 - `optarg`: The argument to the last option.
 - `optext`: Extra settings for internal use.
 
-The variables are created by `getopt` in the caller's scope using `upvar`. This
-allows calls to `getopt` be nested or called from multiple scopes.
+These variables are created by `getopt` in the caller's scope using `upvar`.
+This allows calls to `getopt` be nested or called from multiple scopes.
 
 
 ## Example
