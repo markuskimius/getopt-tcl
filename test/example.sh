@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# getopt library for Tcl test script
+# Example of how to use getopt-tcl, the getopt library for Tcl.
 # https://github.com/markuskimius/getopt-tcl
 #
 # Copyright Mark K. Kim
@@ -27,10 +27,10 @@ proc usage { } {
     puts stderr "Example script to show how to use getopt.tcl"
     puts stderr ""
     puts stderr "Options:"
-    puts stderr "  \[file\]        Input file(s)"
-    puts stderr "  -o <file>     Output file \[default=none\]"
-    puts stderr "  -port <port>  Port number, must be within (1024, 65535\] \[default=$opts(port)\]"
-    puts stderr "  -help         Show help screen (this screen)"
+    puts stderr "  \[file\]                       Input file(s)"
+    puts stderr "  -o <file>, --output=<file>   Output file \[default=none\]"
+    puts stderr "  -p <port>, --port=<port>     Port number, must be within (1024, 65535\] \[default=$opts(port)\]"
+    puts stderr "  -h, --help                   Show help screen (this screen)"
     puts stderr ""
 
     exit 1
@@ -42,13 +42,16 @@ proc main { argv } {
     set errcount 0
 
     while { 1 } {
-        set c [getopt $argv "o 1 port is_port help 0"]
+        set c [getopt $argv "o 1 output 1 p is_port port is_port h 0 help 0"]
         if { $c == -1 } break
 
         switch -exact -- $c {
-            1       { lappend opts(files) $optarg }
-            o       { set opts(output) $optarg    }
+            -       { lappend opts(files) $optarg }
+            o       -
+            output  { set opts(output) $optarg    }
+            p       -
             port    { set opts(port) $optarg      }
+            h       -
             help    { usage                       }
             default { incr errcount               }
         }
