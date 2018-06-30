@@ -1,7 +1,9 @@
 #!/bin/sh
 #
-# Example of how to use getopt-tcl, the getopt library for Tcl.
+# Example showing how to use getopt-tcl, the getopt library for Tcl.
 # https://github.com/markuskimius/getopt-tcl
+#
+# This script works like cat, with options.
 #
 # Copyright Mark K. Kim
 # Released under the Apache license 2.0
@@ -15,84 +17,132 @@ package require getopt
 
 
 # Defaults
-set opts(files)  [list]
-set opts(output) "-"
-set opts(port)   8080
+set opts(files)    [list]
+set opts(output)   "-"
+set opts(number)   0
+set opts(head)     0
+set opts(help)     0
 
 
 proc usage { } {
     global opts
 
-    puts stderr "Usage: test \[option\] \[file\]"
-    puts stderr ""
-    puts stderr "Example script to show how to use getopt.tcl"
-    puts stderr ""
-    puts stderr "Options:"
-    puts stderr "  \[file\]                       Input file(s)"
-    puts stderr "  -o <file>, --output=<file>   Output file \[default=none\]"
-    puts stderr "  -p <port>, --port=<port>     Port number, must be within (1024, 65535\] \[default=$opts(port)\]"
-    puts stderr "  -h, --help                   Show help screen (this screen)"
-    puts stderr ""
-
-    exit 1
+    puts {Usage: test [option] [file]}
+    puts {}
+    puts {Example script to show how to use getopt.tcl}
+    puts {}
+    puts {Options:}
+    puts {  [file]                       Input file(s) [default=stdin]}
+    puts {  -o <file>, --output=<file>   Output file [default=stdout]}
+    puts {}
+    puts {  -n, --number                 Show line numbers}
+    puts {  -H <NUM>, --head=<NUM>       Head operation - show <NUM> lines}
+    puts {}
+    puts {  -h, --help                   Show help screen (this screen)}
+    puts {}
 }
 
 
 proc main { argv } {
     global opts
+    set ofs stdout
     set errcount 0
 
+    # Process options
     while { 1 } {
-        set c [getopt $argv "o 1 output 1 p is_port port is_port h 0 help 0"]
+        set c [getopt $argv "o 1 output 1 n 0 number 0 H is_int head is_int h 0 help 0"]
         if { $c == -1 } break
 
         switch -exact -- $c {
-            -       { lappend opts(files) $optarg }
-            o       -
-            output  { set opts(output) $optarg    }
-            p       -
-            port    { set opts(port) $optarg      }
-            h       -
-            help    { usage                       }
-            default { incr errcount               }
+            -          { lappend opts(files) $optarg }
+            o - output { set opts(output) $optarg    }
+            n - number { set opts(number) 1          }
+            H - head   { set opts(head) $optarg      }
+            h - help   { set opts(help) 1            }
+            default    { incr errcount               }
         }
     }
 
+    # Sanity check
     if { $errcount > 0 } {
-        usage
+        puts stderr ""
+        puts stderr "Type '$::argv0 --help' for help"
+        exit 1
     }
 
+    # Help screen
+    if { $opts(help) } {
+        usage
+        exit
+    }
+
+    # Open output.  Consider "-" as stdout.
+    if { $opts(output) ne "-" } {
+        if { [catch {set ofs [open $opts(output) w]} err] } {
+            puts stderr $err
+            exit 1
+        }
+    }
+
+    # Read stdin by default
     if { [llength $opts(files)] == 0 } {
-        puts stderr "$::argv0: must specify at least one file"
-        usage
+        lappend opts(files) "-"
     }
 
+    # cat input files
     foreach file $opts(files) {
-        do_my_thing $file
+        cat $ofs $file
     }
+
+    close $ofs
 }
 
 
-proc is_port { val } {
-    set isPort 0
-
-    if { [string is integer $val] && $val > 1024 && $val <= 65535 } {
-        set isPort 1
-    }
-
-    return $isPort
+proc is_int { val } {
+    return [string is integer $val]
 }
 
 
-proc do_my_thing { file } {
+###########################################################################
+# Cat a file.  Any options specified in ::opts are honored.
+#
+# @param ofs   Channel to output to.
+# @param file  File to cat. "-" is considered stdin.
+#
+proc cat { ofs file } {
     global opts
-    set output $opts(output)
+    set ifs stdin
+    set num 0
 
-    if { $output eq "-" } {
-        set output "stdout"
+    # Open input file, enable line buffering
+    if { $file ne "-" } {
+        if { [catch {set ifs [open $file r]} err] } {
+            puts stderr $err
+            exit 1
+        }
+
+        fconfigure $ifs -buffering line
     }
 
-    puts "$output: read $file via port $opts(port)"
+    # cat the file
+    while { [gets $ifs line] >= 0 } {
+        incr num
+
+        # Head
+        if { $opts(head) && ( $num > $opts(head) ) } break
+
+        # Line numbers
+        if { $opts(number) } {
+            set line [format "%3d %s" $num $line]
+        }
+
+        puts $ofs $line
+    }
+
+    # Close input file
+    if { $ifs ne "stdin" } {
+        close $ifs
+    }
 }
 
 
