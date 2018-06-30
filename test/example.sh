@@ -10,7 +10,8 @@
 #\
 exec tclsh "$0" "$@"
 
-source "../src/getopt.tcl"
+lappend auto_path "../lib"
+package require getopt
 
 
 # Defaults

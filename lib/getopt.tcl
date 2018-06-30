@@ -1,11 +1,15 @@
 #
-# getopt library for Tcl v0.0.2
+# getopt library for Tcl v0.1
 # https://github.com/markuskimius/getopt-tcl
 #
 # Copyright Mark K. Kim
 # Released under the Apache license 2.0
 # https://github.com/markuskimius/getopt-tcl/blob/master/LICENSE
 #
+
+package provide getopt 0.1
+
+
 proc getopt { argv optstring } {
     array set optarray $optstring
     upvar optopt optopt
