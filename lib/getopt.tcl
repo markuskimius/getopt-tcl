@@ -98,14 +98,11 @@ proc getopt { argv optstring } {
     # Is there an argument for us to read?
     if { $islong && $gotarg } {
         # Nothing to do
-    } elseif { $islong } {
-        # Get arg
-        set optarg [lindex $argv $optind]
-        incr optind
     } elseif { $optind < [llength $argv] } {
         set optarg [lindex $argv $optind]
         incr optind
 
+        # Short option, argument without space
         if { $optext(subind) > 1 } {
             set optarg [string range $optarg $optext(subind) end]
             set optext(subind) 1
