@@ -4,7 +4,7 @@ A getopt library for Tcl.
 
 ## Features
 
-The syntax is based on GNU `getopt_long`:
+The feature set is based on GNU `getopt_long`:
 
 - Short options. Options may be combined (`-a -b -c` is equivalent to `-abc`).
   Option arguments, if any, may appear with or without a space (`-o value` is
