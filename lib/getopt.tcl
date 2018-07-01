@@ -118,13 +118,12 @@ proc getopt { argv optstring } {
     } elseif { [info procs $v_fn] ne $v_fn } {
         # We should never get here. Show error message then crash so the
         # developer can see the stacktrace and debug their code.
-        puts stderr "$::argv0: invalid validation function -- '$v_fn'"
-        eval [list $v_fn $optarg]
+        error "$::argv0: invalid validation function -- '$v_fn'"
     } elseif { [eval [list $v_fn $optarg]] } {
         # Validation passed - nothing to do
     } else {
         # Validation fail
-        puts stderr "$::argv0: invalid value as an argument to option '$optopt' -- '$optarg'"
+        puts stderr "$::argv0: invalid argument to option '$optopt' -- '$optarg'"
         return $ERROR
     }
 

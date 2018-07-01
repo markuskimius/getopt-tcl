@@ -99,7 +99,7 @@ proc main { argv } {
 
 
 proc is_int { val } {
-    return [string is integer $val]
+    return [string is integer -strict $val]
 }
 
 

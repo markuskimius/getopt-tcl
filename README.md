@@ -81,7 +81,7 @@ proc is_port { value } {
 
     # A port must be a positive integer less than 2^16. Also, UNIX doesn't
     # allow a port number <= 1024 except as root.
-    if { [string is integer $value] && $value > 1024 && $value < 65536 } {
+    if { [string is integer -strict $value] && $value > 1024 && $value < 65536 } {
         set isport 1
     }
 

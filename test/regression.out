@@ -1,0 +1,397 @@
+*** BASIC ***
+  target myarg1:
+  -|index = 1
+  -|opts = 0
+  0 = myarg1
+
+  target -n:
+  -|index = 1
+  -|opts = n
+  n = {}
+
+  target --no-arg:
+  -|index = 1
+  -|opts = no-arg
+  n = {}
+
+  target -w warg1:
+  -|index = 2
+  -|opts = w
+  w = warg1
+
+  target --with-arg warg1:
+  -|index = 2
+  -|opts = with-arg
+  w = warg1
+
+  target --with-arg=warg1:
+  -|index = 1
+  -|opts = with-arg
+  w = warg1
+
+  target -i1024:
+  -|index = 1
+  -|opts = i
+  i = 1024
+
+  target -i 1024:
+  -|index = 2
+  -|opts = i
+  i = 1024
+
+  target --integer 1024:
+  -|index = 2
+  -|opts = integer
+  i = 1024
+
+  target --integer=1024:
+  -|index = 1
+  -|opts = integer
+  i = 1024
+
+*** REPETITIONS ***
+  target myarg1 myarg2:
+  -|index = 1 2
+  -|opts = 0 0
+  0 = myarg1 myarg2
+
+  target -nn:
+  -|index = 0 1
+  -|opts = n n
+  n = {} {}
+
+  target --no-arg --no-arg:
+  -|index = 1 2
+  -|opts = no-arg no-arg
+  n = {} {}
+
+  target -w warg1 -w warg2:
+  -|index = 2 4
+  -|opts = w w
+  w = warg1 warg2
+
+  target -wwarg1 -wwarg2:
+  -|index = 1 2
+  -|opts = w w
+  w = warg1 warg2
+
+  target --with-arg warg1 --with-arg warg2:
+  -|index = 2 4
+  -|opts = with-arg with-arg
+  w = warg1 warg2
+
+  target --with-arg=warg1 --with-arg=warg2:
+  -|index = 1 2
+  -|opts = with-arg with-arg
+  w = warg1 warg2
+
+  target -i1024 -i2048:
+  -|index = 1 2
+  -|opts = i i
+  i = 1024 2048
+
+  target -i 1024 -i 2048:
+  -|index = 2 4
+  -|opts = i i
+  i = 1024 2048
+
+  target --integer 1024 --integer 2048:
+  -|index = 2 4
+  -|opts = integer integer
+  i = 1024 2048
+
+  target --integer=1024 --integer=2048:
+  -|index = 1 2
+  -|opts = integer integer
+  i = 1024 2048
+
+*** COMBINATION (RELATED) ***
+  target -n --no-arg:
+  -|index = 1 2
+  -|opts = n no-arg
+  n = {} {}
+
+  target -wwarg1 -w warg2 --with-arg warg3 --with-arg=warg4:
+  -|index = 1 3 5 6
+  -|opts = w w with-arg with-arg
+  w = warg1 warg2 warg3 warg4
+
+  target -i1024 -i 2048 --integer 3072 --integer=4096:
+  -|index = 1 3 5 6
+  -|opts = i i integer integer
+  i = 1024 2048 3072 4096
+
+*** COMBINATION (COMPREHENSIVE) ***
+  target -n --no-arg -wwarg1 -w warg2 --with-arg warg3 --with-arg=warg4 -i1024 -i 2048 --integer 3072 --integer=4096 myarg1:
+  -|index = 1 2 3 5 7 8 9 11 13 14 15
+  -|opts = n no-arg w w with-arg with-arg i i integer integer 0
+  0 = myarg1
+  i = 1024 2048 3072 4096
+  n = {} {}
+  w = warg1 warg2 warg3 warg4
+
+  target --no-arg -nwwarg1 -w warg2 --with-arg warg3 --with-arg=warg4 -i1024 -i 2048 --integer 3072 --integer=4096 myarg1:
+  -|index = 1 1 2 4 6 7 8 10 12 13 14
+  -|opts = no-arg n w w with-arg with-arg i i integer integer 0
+  0 = myarg1
+  i = 1024 2048 3072 4096
+  n = {} {}
+  w = warg1 warg2 warg3 warg4
+
+  target --no-arg -wwarg1 -nw warg2 --with-arg warg3 --with-arg=warg4 -i1024 -i 2048 --integer 3072 --integer=4096 myarg1:
+  -|index = 1 2 2 4 6 7 8 10 12 13 14
+  -|opts = no-arg w n w with-arg with-arg i i integer integer 0
+  0 = myarg1
+  i = 1024 2048 3072 4096
+  n = {} {}
+  w = warg1 warg2 warg3 warg4
+
+  target --no-arg -wwarg1 -w warg2 --with-arg warg3 --with-arg=warg4 -ni1024 -i 2048 --integer 3072 --integer=4096 myarg1:
+  -|index = 1 2 4 6 7 7 8 10 12 13 14
+  -|opts = no-arg w w with-arg with-arg n i i integer integer 0
+  0 = myarg1
+  i = 1024 2048 3072 4096
+  n = {} {}
+  w = warg1 warg2 warg3 warg4
+
+  target --no-arg -wwarg1 -w warg2 --with-arg warg3 --with-arg=warg4 -i1024 -ni 2048 --integer 3072 --integer=4096 myarg1:
+  -|index = 1 2 4 6 7 8 8 10 12 13 14
+  -|opts = no-arg w w with-arg with-arg i n i integer integer 0
+  0 = myarg1
+  i = 1024 2048 3072 4096
+  n = {} {}
+  w = warg1 warg2 warg3 warg4
+
+  target --no-arg -wwarg1 -w warg2 --with-arg warg3 --with-arg=warg4 -i1024 -i 2048 --integer 3072 --integer=4096 myarg1 -n:
+  -|index = 1 2 4 6 7 8 10 12 13 14 15
+  -|opts = no-arg w w with-arg with-arg i i integer integer 0 n
+  0 = myarg1
+  i = 1024 2048 3072 4096
+  n = {} {}
+  w = warg1 warg2 warg3 warg4
+
+  target --no-arg -wwarg1 -w warg2 --with-arg warg3 --with-arg=warg4 -i1024 -i 2048 --integer 3072 --integer=4096 -n myarg1:
+  -|index = 1 2 4 6 7 8 10 12 13 14 15
+  -|opts = no-arg w w with-arg with-arg i i integer integer n 0
+  0 = myarg1
+  i = 1024 2048 3072 4096
+  n = {} {}
+  w = warg1 warg2 warg3 warg4
+
+  target --no-arg -w warg1 --with-arg warg2 --with-arg=warg3 -i1024 -i 2048 --integer 3072 --integer=4096 myarg1 -nwwarg4:
+  -|index = 1 3 5 6 7 9 11 12 13 13 14
+  -|opts = no-arg w with-arg with-arg i i integer integer 0 n w
+  0 = myarg1
+  i = 1024 2048 3072 4096
+  n = {} {}
+  w = warg1 warg2 warg3 warg4
+
+  target --no-arg -w warg1 --with-arg warg2 --with-arg=warg3 -i1024 -i 2048 --integer 3072 --integer=4096 -nwwarg4 myarg1:
+  -|index = 1 3 5 6 7 9 11 12 12 13 14
+  -|opts = no-arg w with-arg with-arg i i integer integer n w 0
+  0 = myarg1
+  i = 1024 2048 3072 4096
+  n = {} {}
+  w = warg1 warg2 warg3 warg4
+
+  target --no-arg -wwarg1 --with-arg warg2 --with-arg=warg3 -i1024 -i 2048 --integer 3072 --integer=4096 myarg1 -nw warg4:
+  -|index = 1 2 4 5 6 8 10 11 12 12 14
+  -|opts = no-arg w with-arg with-arg i i integer integer 0 n w
+  0 = myarg1
+  i = 1024 2048 3072 4096
+  n = {} {}
+  w = warg1 warg2 warg3 warg4
+
+  target --no-arg -wwarg1 --with-arg warg2 --with-arg=warg3 -i1024 -i 2048 --integer 3072 --integer=4096 -nw warg4 myarg1:
+  -|index = 1 2 4 5 6 8 10 11 11 13 14
+  -|opts = no-arg w with-arg with-arg i i integer integer n w 0
+  0 = myarg1
+  i = 1024 2048 3072 4096
+  n = {} {}
+  w = warg1 warg2 warg3 warg4
+
+  target --no-arg -wwarg1 -w warg2 --with-arg warg3 --with-arg=warg4 -i 1024 --integer 2048 --integer=3072 myarg1 -ni4096:
+  -|index = 1 2 4 6 7 9 11 12 13 13 14
+  -|opts = no-arg w w with-arg with-arg i integer integer 0 n i
+  0 = myarg1
+  i = 1024 2048 3072 4096
+  n = {} {}
+  w = warg1 warg2 warg3 warg4
+
+  target --no-arg -wwarg1 -w warg2 --with-arg warg3 --with-arg=warg4 -i 1024 --integer 2048 --integer=3072 -ni4096 myarg1:
+  -|index = 1 2 4 6 7 9 11 12 12 13 14
+  -|opts = no-arg w w with-arg with-arg i integer integer n i 0
+  0 = myarg1
+  i = 1024 2048 3072 4096
+  n = {} {}
+  w = warg1 warg2 warg3 warg4
+
+  target --no-arg -wwarg1 -w warg2 --with-arg warg3 --with-arg=warg4 -i1024 --integer 2048 --integer=3072 myarg1 -ni 4096:
+  -|index = 1 2 4 6 7 8 10 11 12 12 14
+  -|opts = no-arg w w with-arg with-arg i integer integer 0 n i
+  0 = myarg1
+  i = 1024 2048 3072 4096
+  n = {} {}
+  w = warg1 warg2 warg3 warg4
+
+  target --no-arg -wwarg1 -w warg2 --with-arg warg3 --with-arg=warg4 -i1024 --integer 2048 --integer=3072 -ni 4096 myarg1:
+  -|index = 1 2 4 6 7 8 10 11 11 13 14
+  -|opts = no-arg w w with-arg with-arg i integer integer n i 0
+  0 = myarg1
+  i = 1024 2048 3072 4096
+  n = {} {}
+  w = warg1 warg2 warg3 warg4
+
+*** EMPTY ARGS ***
+  target -n --no-arg -wwarg1 -w {} --with-arg warg2 --with-arg=warg3 -i1024 -i 2048 --integer 3072 --integer=4096 myarg1:
+  -|index = 1 2 3 5 7 8 9 11 13 14 15
+  -|opts = n no-arg w w with-arg with-arg i i integer integer 0
+  0 = myarg1
+  i = 1024 2048 3072 4096
+  n = {} {}
+  w = warg1 {} warg2 warg3
+
+  target -n --no-arg -wwarg1 -w warg2 --with-arg {} --with-arg=warg3 -i1024 -i 2048 --integer 3072 --integer=4096 myarg1:
+  -|index = 1 2 3 5 7 8 9 11 13 14 15
+  -|opts = n no-arg w w with-arg with-arg i i integer integer 0
+  0 = myarg1
+  i = 1024 2048 3072 4096
+  n = {} {}
+  w = warg1 warg2 {} warg3
+
+  target -n --no-arg -wwarg1 -w warg2 --with-arg warg3 --with-arg= -i1024 -i 2048 --integer 3072 --integer=4096 myarg1:
+  -|index = 1 2 3 5 7 8 9 11 13 14 15
+  -|opts = n no-arg w w with-arg with-arg i i integer integer 0
+  0 = myarg1
+  i = 1024 2048 3072 4096
+  n = {} {}
+  w = warg1 warg2 warg3 {}
+
+  target -n --no-arg -wwarg1 -w warg2 --with-arg warg3 -i1024 -i 1024 --integer 2048 --integer=3072 myarg1 --with-arg=:
+  -|index = 1 2 3 5 7 8 10 12 13 14 15
+  -|opts = n no-arg w w with-arg i i integer integer 0 with-arg
+  0 = myarg1
+  i = 1024 1024 2048 3072
+  n = {} {}
+  w = warg1 warg2 warg3 {}
+
+  target -n --no-arg -wwarg1 -w warg2 --with-arg warg3 -i1024 -i 1024 --integer 2048 --integer=3072 --with-arg= myarg1:
+  -|index = 1 2 3 5 7 8 10 12 13 14 15
+  -|opts = n no-arg w w with-arg i i integer integer with-arg 0
+  0 = myarg1
+  i = 1024 1024 2048 3072
+  n = {} {}
+  w = warg1 warg2 warg3 {}
+
+*** EXCEPTIONS (EMPTY INTEGER ARGS) ***
+  target -n --no-arg -wwarg1 -w warg2 --with-arg warg3 --with-arg=warg4 -i1024 -i {} --integer 2048 --integer=3072 myarg1:
+./regression.sh: invalid argument to option 'i' -- ''
+  -|index = 1 2 3 5 7 8 9 11 13 14 15
+  -|opts = n no-arg w w with-arg with-arg i i integer integer 0
+  0 = myarg1
+  i = 1024 2048 3072
+  n = {} {}
+  w = warg1 warg2 warg3 warg4
+  x = {}
+
+  target -n --no-arg -wwarg1 -w warg2 --with-arg warg3 --with-arg=warg4 -i1024 -i 2048 --integer {} --integer=3072 myarg1:
+./regression.sh: invalid argument to option 'integer' -- ''
+  -|index = 1 2 3 5 7 8 9 11 13 14 15
+  -|opts = n no-arg w w with-arg with-arg i i integer integer 0
+  0 = myarg1
+  i = 1024 2048 3072
+  n = {} {}
+  w = warg1 warg2 warg3 warg4
+  x = {}
+
+  target -n --no-arg -wwarg1 -w warg2 --with-arg warg3 --with-arg=warg4 -i1024 -i 2048 --integer 3072 --integer= myarg1:
+./regression.sh: invalid argument to option 'integer' -- ''
+  -|index = 1 2 3 5 7 8 9 11 13 14 15
+  -|opts = n no-arg w w with-arg with-arg i i integer integer 0
+  0 = myarg1
+  i = 1024 2048 3072
+  n = {} {}
+  w = warg1 warg2 warg3 warg4
+  x = {}
+
+*** EXCEPTIONS (MISSING MANDATORY ARGS) ***
+  target -n --no-arg -w warg1 --with-arg warg2 --with-arg=warg3 -i1024 -i 1024 --integer 2048 --integer=3072 myarg1 -w:
+./regression.sh: option requires an argument -- 'w'
+  -|index = 1 2 4 6 7 8 10 12 13 14 15
+  -|opts = n no-arg w with-arg with-arg i i integer integer 0 w
+  0 = myarg1
+  i = 1024 1024 2048 3072
+  n = {} {}
+  w = warg1 warg2 warg3
+  x = {}
+
+  target -n --no-arg -wwarg1 --with-arg warg2 --with-arg=warg3 -i1024 -i 1024 --integer 2048 --integer=3072 myarg1 -w:
+./regression.sh: option requires an argument -- 'w'
+  -|index = 1 2 3 5 6 7 9 11 12 13 14
+  -|opts = n no-arg w with-arg with-arg i i integer integer 0 w
+  0 = myarg1
+  i = 1024 1024 2048 3072
+  n = {} {}
+  w = warg1 warg2 warg3
+  x = {}
+
+  target -n --no-arg -wwarg1 -w warg2 --with-arg=warg3 -i1024 -i 1024 --integer 2048 --integer=3072 myarg1 --with-arg:
+./regression.sh: option requires an argument -- 'with-arg'
+  -|index = 1 2 3 5 6 7 9 11 12 13 14
+  -|opts = n no-arg w w with-arg i i integer integer 0 with-arg
+  0 = myarg1
+  i = 1024 1024 2048 3072
+  n = {} {}
+  w = warg1 warg2 warg3
+  x = {}
+
+  target -n --no-arg -wwarg1 -w warg2 --with-arg warg3 --with-arg=warg4 -i 1024 --integer 2048 --integer=3072 myarg1 -i:
+./regression.sh: option requires an argument -- 'i'
+  -|index = 1 2 3 5 7 8 10 12 13 14 15
+  -|opts = n no-arg w w with-arg with-arg i integer integer 0 i
+  0 = myarg1
+  i = 1024 2048 3072
+  n = {} {}
+  w = warg1 warg2 warg3 warg4
+  x = {}
+
+  target -n --no-arg -wwarg1 -w warg2 --with-arg warg3 --with-arg=warg4 -i1024 --integer 2048 --integer=3072 myarg1 -i:
+./regression.sh: option requires an argument -- 'i'
+  -|index = 1 2 3 5 7 8 9 11 12 13 14
+  -|opts = n no-arg w w with-arg with-arg i integer integer 0 i
+  0 = myarg1
+  i = 1024 2048 3072
+  n = {} {}
+  w = warg1 warg2 warg3 warg4
+  x = {}
+
+  target -n --no-arg -wwarg1 -w warg2 --with-arg warg3 --with-arg=warg4 -i1024 -i 2048 --integer=3072 myarg1 --integer:
+./regression.sh: option requires an argument -- 'integer'
+  -|index = 1 2 3 5 7 8 9 11 12 13 14
+  -|opts = n no-arg w w with-arg with-arg i i integer 0 integer
+  0 = myarg1
+  i = 1024 2048 3072
+  n = {} {}
+  w = warg1 warg2 warg3 warg4
+  x = {}
+
+  target -n --no-arg -wwarg1 -w warg2 --with-arg warg3 --with-arg=warg4 -i1024 -i 2048 --integer 3072 --integer= myarg1:
+./regression.sh: invalid argument to option 'integer' -- ''
+  -|index = 1 2 3 5 7 8 9 11 13 14 15
+  -|opts = n no-arg w w with-arg with-arg i i integer integer 0
+  0 = myarg1
+  i = 1024 2048 3072
+  n = {} {}
+  w = warg1 warg2 warg3 warg4
+  x = {}
+
+  target -n --no-arg -wwarg1 -w warg2 --with-arg warg3 --with-arg=warg4 -i1024 -i 2048 --integer 3072 myarg1 --integer=:
+./regression.sh: invalid argument to option 'integer' -- ''
+  -|index = 1 2 3 5 7 8 9 11 13 14 15
+  -|opts = n no-arg w w with-arg with-arg i i integer 0 integer
+  0 = myarg1
+  i = 1024 2048 3072
+  n = {} {}
+  w = warg1 warg2 warg3 warg4
+  x = {}
+
