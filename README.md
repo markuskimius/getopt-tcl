@@ -57,19 +57,19 @@ while { 1 } {
     if { $c == -1 } break
 
     switch -exact -- $c {
-        -       { lappend opts(files) $optarg }
-        h       -
-        help    { usage                       }
-        o       -
-        output  { set opts(output) $optarg    }
-        p       -
-        port    { set opts(port) $optarg      }
-        default { incr errcount               }
+        -           { lappend opts(files) $optarg }
+        h - help    { usage ; exit                }
+        o - output  { set opts(output) $optarg    }
+        p - port    { set opts(port) $optarg      }
+        default     { exit 1                      }
     }
 }
 ```
 
-In the above example, single character options `h`, `o`, `p` may be specified with a single hyphen (`-h`, `-o`, `-p`). Two hyphens are also accepted. The others must be specified with two hyphens (`--help`, `--output`, `--port`).
+In the above example, single character options `h`, `o`, `p` may be
+specified with a single hyphen (`-h`, `-o`, `-p`). Two hyphens are also
+accepted. The others must be specified with two hyphens (`--help`,
+`--output`, `--port`).
 
 - `-h` and `--help` take no arguments since the value that follows each is 0.
 - `-o` and `--output` take any argument since the value that follows each is 1.
@@ -80,8 +80,8 @@ proc is_port { value } {
     set isport 0
 
     # A port must be a positive integer less than 2^16. Also, UNIX doesn't
-    # allow a port number <= 1024 except as root.
-    if { [string is integer -strict $value] && $value > 1024 && $value < 65536 } {
+    # allow a port number < 1024 except as root.
+    if { [string is integer -strict $value] && $value >= 1024 && $value < 65536 } {
         set isport 1
     }
 
