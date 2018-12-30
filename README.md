@@ -11,11 +11,11 @@ The feature set is based on GNU `getopt_long`:
   equivalent to `-ovalue`).
 - Long options. Option arguments, if any, may appear with or without an equal sign
   (`--option value` is equivalent to `--option=value`).
+- Optional arguments are supported for long options. The optional argument must
+  be specified with an equal sign (`--option=value`).
 - Options (with or without arguments) and optionless arguments may appear in
   any order.
 - `--` can be used to denote the end of options.
-
-Options that takes an optional argument is not supported.
 
 
 ## Usage
@@ -53,7 +53,7 @@ This allows calls to `getopt` be nested or called from multiple scopes.
 ## Example
 ```tcl
 while { 1 } {
-    set c [getopt $argv "h 0 help 0 o 1 output 1 p is_port port is_port"]
+    set c [getopt $argv "h 0 help 0 o 1 output 1 p is_port port is_port verbose (is_int,1)"]
     if { $c == -1 } break
 
     switch -exact -- $c {
@@ -61,6 +61,7 @@ while { 1 } {
         h - help    { usage ; exit                }
         o - output  { set opts(output) $optarg    }
         p - port    { set opts(port) $optarg      }
+        verbose     { set opts(verbose) $optarg   }
         default     { exit 1                      }
     }
 }
@@ -88,6 +89,9 @@ proc is_port { value } {
     return $isport
 }
 ```
+
+Finally, `--verbose` take an optional argument whose value, if any, must pass
+the test by `is_int`. If no value is specified, the value defaults to `1`.
 
 See [example.sh] for a more complete example.
 

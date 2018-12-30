@@ -20,6 +20,7 @@ package require getopt
 set opts(files)    [list]
 set opts(output)   "-"
 set opts(number)   0
+set opts(offset)   0
 set opts(head)     0
 set opts(help)     0
 
@@ -35,7 +36,7 @@ proc usage { } {
     puts {  [file]                       Input file(s) [default=stdin]}
     puts {  -o <file>, --output=<file>   Output file [default=stdout]}
     puts {}
-    puts {  -n, --number                 Show line numbers}
+    puts {  -n, --number[=start]         Show line numbers, starting at [start] if specified}
     puts {  -H <NUM>, --head=<NUM>       Head operation - show <NUM> lines}
     puts {}
     puts {  -h, --help                   Show help screen (this screen)}
@@ -50,13 +51,14 @@ proc main { argv } {
 
     # Process options
     while { 1 } {
-        set c [getopt $argv "o 1 output 1 n 0 number 0 H is_int head is_int h 0 help 0"]
+        set c [getopt $argv "o 1 output 1 n (0,1) number (is_int,1) H is_int head is_int h 0 help 0"]
         if { $c == -1 } break
 
         switch -exact -- $c {
             -          { lappend opts(files) $optarg }
             o - output { set opts(output) $optarg    }
-            n - number { set opts(number) 1          }
+            n - number { set opts(number) 1
+                         set opts(offset) [expr $optarg - 1] }
             H - head   { set opts(head) $optarg      }
             h - help   { set opts(help) 1            }
             default    { incr errcount               }
@@ -111,8 +113,9 @@ proc is_int { val } {
 #
 proc cat { ofs file } {
     global opts
+    set off $opts(offset)
     set ifs stdin
-    set num 0
+    set count 0
 
     # Open input file, enable line buffering
     if { $file ne "-" } {
@@ -126,13 +129,14 @@ proc cat { ofs file } {
 
     # cat the file
     while { [gets $ifs line] >= 0 } {
-        incr num
+        incr count
 
         # Head
-        if { $opts(head) && ( $num > $opts(head) ) } break
+        if { $opts(head) && ( $count > $opts(head) ) } break
 
         # Line numbers
         if { $opts(number) } {
+            set num [expr $count + $off]
             set line [format "%3d %s" $num $line]
         }
 

@@ -7,7 +7,7 @@
 # https://github.com/markuskimius/getopt-tcl/blob/master/LICENSE
 #
 
-package provide getopt 0.1
+package provide getopt 0.2
 
 
 proc getopt { argv optstring } {
@@ -89,14 +89,24 @@ proc getopt { argv optstring } {
         return $ERROR
     }
 
+    # Is the argument optional and/or have a default value?
+    set isargopt 0
+    set defalt ""
+    if { [regexp {^\(([^,]*)(?:,(.*))?\)$} $v_fn all rv_fn defalt] } {
+        set isargopt 1
+        set v_fn $rv_fn
+    }
+
     # Does this option take an argument?
     if { [string is integer $v_fn] && ! $v_fn } {
-        # No
+        # No - return with the default value, if any
+        set optarg $defalt
+
         return $optopt
     }
 
     # Is there an argument for us to read?
-    if { $islong && $gotarg } {
+    if { $islong && ( $gotarg || $isargopt ) } {
         # Nothing to do
     } elseif { $optind < [llength $argv] } {
         set optarg [lindex $argv $optind]
@@ -115,6 +125,9 @@ proc getopt { argv optstring } {
     # Do we need to validate the argument?
     if { [string is integer $v_fn] } {
         # No validation needed
+    } elseif { $optarg == "" && $isargopt } {
+        # No argument specified and isn't required - use the default
+        set optarg $defalt
     } elseif { [info procs $v_fn] ne $v_fn } {
         # We should never get here. Show error message then crash so the
         # developer can see the stacktrace and debug their code.
