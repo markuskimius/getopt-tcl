@@ -1,8 +1,8 @@
 #
-# getopt library for Tcl v0.1
+# getopt library for Tcl v0.2
 # https://github.com/markuskimius/getopt-tcl
 #
-# Copyright Mark K. Kim
+# Copyright (c)2018-2019 Mark K. Kim
 # Released under the Apache license 2.0
 # https://github.com/markuskimius/getopt-tcl/blob/master/LICENSE
 #
