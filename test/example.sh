@@ -51,7 +51,7 @@ proc main { argv } {
 
     # Process options
     while { 1 } {
-        set c [getopt $argv "o 1 output 1 n (0,1) number (is_int,1) H is_int head is_int h 0 help 0"]
+        set c [getopt $argv "o 1 output 1 n (is_int,1) number (is_int,1) H is_int head is_int h 0 help 0"]
         if { $c == -1 } break
 
         switch -exact -- $c {

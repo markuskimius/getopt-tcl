@@ -1,13 +1,13 @@
 #
-# getopt library for Tcl v0.2
+# getopt library for Tcl v0.3
 # https://github.com/markuskimius/getopt-tcl
 #
-# Copyright (c)2018-2019 Mark K. Kim
+# Copyright (c)2018-2020 Mark K. Kim
 # Released under the Apache license 2.0
 # https://github.com/markuskimius/getopt-tcl/blob/master/LICENSE
 #
 
-package provide getopt 0.2
+package provide getopt 0.3
 
 
 proc getopt { argv optstring } {
@@ -108,6 +108,14 @@ proc getopt { argv optstring } {
     # Is there an argument for us to read?
     if { $islong && ( $gotarg || $isargopt ) } {
         # Nothing to do
+    } elseif { $isargopt } {
+        if { $optext(subind) > 1 } {
+            set optarg [lindex $argv $optind]
+            set optarg [string range $optarg $optext(subind) end]
+
+            incr optind
+            set optext(subind) 1
+        }
     } elseif { $optind < [llength $argv] } {
         set optarg [lindex $argv $optind]
         incr optind
