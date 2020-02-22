@@ -95,7 +95,7 @@ Finally, `-v` and `--verbose` take an optional argument whose value, if any,
 must pass the test by `is_int`. If no value is specified, the value defaults to
 `1`.
 
-See [example.sh] for a more complete example.
+See [example.tcl] for a more complete example.
 
 
 ## License
@@ -103,6 +103,6 @@ See [example.sh] for a more complete example.
 [Apache 2.0]
 
 
-[example.sh]: <https://github.com/markuskimius/getopt-tcl/blob/master/test/example.sh>
+[example.tcl]: <https://github.com/markuskimius/getopt-tcl/blob/master/test/example.tcl>
 [Apache 2.0]: <https://github.com/markuskimius/getopt-tcl/blob/master/LICENSE>
 
